@@ -8,7 +8,7 @@ namespace CreditCardApplications.Tests
         [Fact]
         public void AcceptHighIncomeApplications()
         {
-            var sut = new CreditCarApplicationEvaluator();
+            var sut = new CreditCarApplicationEvaluator(null);
             var application = new CreditCarApplication { GrossAnualInput = 100_000 };
             var decision = sut.Evaluate(application);
 
@@ -18,7 +18,7 @@ namespace CreditCardApplications.Tests
         [Fact]
         public void ReferYoungApplications()
         {
-            var sut = new CreditCarApplicationEvaluator();
+            var sut = new CreditCarApplicationEvaluator(null);
             var application = new CreditCarApplication { Age = 19 };
             var decision = sut.Evaluate(application);
 
