@@ -22,7 +22,7 @@ namespace CreditCardApplications
                 return CreditCarApplicationDecision.AutoAccepted;
             }
 
-            if (_frequentFlyerNumberValidator.IsValid(application.FrecuentFlyerNumber))
+            if (!_frequentFlyerNumberValidator.IsValid(application.FrecuentFlyerNumber))
             {
                 return CreditCarApplicationDecision.ReferredToHuman;
             }

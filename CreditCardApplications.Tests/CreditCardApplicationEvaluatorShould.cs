@@ -1,5 +1,7 @@
 using System;
 using Xunit;
+using Moq;
+using CreditCardApplications.FrequentFlyerNumberValidator;
 
 namespace CreditCardApplications.Tests
 {
@@ -8,7 +10,9 @@ namespace CreditCardApplications.Tests
         [Fact]
         public void AcceptHighIncomeApplications()
         {
-            var sut = new CreditCarApplicationEvaluator(null);
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
             var application = new CreditCarApplication { GrossAnualInput = 100_000 };
             var decision = sut.Evaluate(application);
 
@@ -18,11 +22,31 @@ namespace CreditCardApplications.Tests
         [Fact]
         public void ReferYoungApplications()
         {
-            var sut = new CreditCarApplicationEvaluator(null);
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
             var application = new CreditCarApplication { Age = 19 };
             var decision = sut.Evaluate(application);
 
             Assert.Equal(CreditCarApplicationDecision.ReferredToHuman, decision);
+        }
+
+        [Fact]
+        public void DeclineLowIncomeApplications()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.IsValid("x")).Returns(true);
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCarApplication
+            {
+                Age = 42,
+                GrossAnualInput = 19_000,
+                FrecuentFlyerNumber = "x"
+            };
+            var decision = sut.Evaluate(application);
+
+            Assert.Equal(CreditCarApplicationDecision.AutoDeclined, decision);
         }
     }
 }
