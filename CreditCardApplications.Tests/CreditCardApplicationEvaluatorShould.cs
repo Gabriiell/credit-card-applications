@@ -23,6 +23,7 @@ namespace CreditCardApplications.Tests
         public void ReferYoungApplications()
         {
             var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
 
             var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
             var application = new CreditCarApplication { Age = 19 };
@@ -35,14 +36,13 @@ namespace CreditCardApplications.Tests
         public void DeclineLowIncomeApplications()
         {
             var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
-            mockValidator.Setup(x => x.IsValid("x")).Returns(true);
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
 
             var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
             var application = new CreditCarApplication
             {
                 Age = 42,
-                GrossAnualInput = 19_000,
-                FrecuentFlyerNumber = "x"
+                GrossAnualInput = 19_000
             };
             var decision = sut.Evaluate(application);
 
