@@ -22,6 +22,11 @@ namespace CreditCardApplications
                 return CreditCarApplicationDecision.AutoAccepted;
             }
 
+            if (_frequentFlyerNumberValidator.LicenseKey == "EXPIRED")
+            {
+                return CreditCarApplicationDecision.ReferredToHuman;
+            }
+
             if (!_frequentFlyerNumberValidator.IsValid(application.FrecuentFlyerNumber))
             {
                 return CreditCarApplicationDecision.ReferredToHuman;

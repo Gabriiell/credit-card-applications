@@ -4,6 +4,8 @@ namespace CreditCardApplications.FrequentFlyerNumberValidator
 {
     public class FrequentFlyerNumberValidator : IFrequentFlyerNumberValidator
     {
+        public string LicenseKey => throw new NotImplementedException();
+
         public bool IsValid(string frequentFlyerNumber)
         {
             throw new NotImplementedException("For demo purposes!");

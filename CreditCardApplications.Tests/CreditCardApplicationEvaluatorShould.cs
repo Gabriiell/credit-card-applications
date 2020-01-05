@@ -48,5 +48,23 @@ namespace CreditCardApplications.Tests
 
             Assert.Equal(CreditCarApplicationDecision.AutoDeclined, decision);
         }
+
+        [Fact]
+        public void ReferWhenLicenseExpired()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
+            mockValidator.Setup(x => x.LicenseKey).Returns("EXPIRED");
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCarApplication
+            {
+                Age = 42
+            };
+
+            var decision = sut.Evaluate(application);
+
+            Assert.Equal(CreditCarApplicationDecision.ReferredToHuman, decision);
+        }
     }
 }
