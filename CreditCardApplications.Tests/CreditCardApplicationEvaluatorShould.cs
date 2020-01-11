@@ -24,6 +24,7 @@ namespace CreditCardApplications.Tests
         {
             var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
             mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
+            mockValidator.DefaultValue = DefaultValue.Mock;
 
             var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
             var application = new CreditCarApplication { Age = 19 };
@@ -37,6 +38,7 @@ namespace CreditCardApplications.Tests
         {
             var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
             mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
+            mockValidator.DefaultValue = DefaultValue.Mock;
 
             var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
             var application = new CreditCarApplication
@@ -54,7 +56,7 @@ namespace CreditCardApplications.Tests
         {
             var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
             mockValidator.Setup(x => x.IsValid(It.IsAny<string>())).Returns(true);
-            mockValidator.Setup(x => x.LicenseKey).Returns("EXPIRED");
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns(GetLicense);
 
             var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
             var application = new CreditCarApplication
@@ -65,6 +67,29 @@ namespace CreditCardApplications.Tests
             var decision = sut.Evaluate(application);
 
             Assert.Equal(CreditCarApplicationDecision.ReferredToHuman, decision);
+        }
+
+        [Fact]
+        public void UseDetailedLookupWithOlderApplications()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns(GetLicense);
+            mockValidator.SetupProperty(x => x.ValidationMode);
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCarApplication
+            {
+                Age = 42
+            };
+
+            var decision = sut.Evaluate(application);
+
+            Assert.Equal(ValidationMode.Detailed, mockValidator.Object.ValidationMode);
+        }
+
+        string GetLicense()
+        {
+            return "EXPIRED";
         }
     }
 }

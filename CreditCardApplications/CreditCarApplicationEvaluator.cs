@@ -22,7 +22,9 @@ namespace CreditCardApplications
                 return CreditCarApplicationDecision.AutoAccepted;
             }
 
-            if (_frequentFlyerNumberValidator.LicenseKey == "EXPIRED")
+            _frequentFlyerNumberValidator.ValidationMode = application.Age >= 30 ? ValidationMode.Detailed : ValidationMode.Quick;
+
+            if (_frequentFlyerNumberValidator.ServiceInformation.License.LicenseKey == "EXPIRED")
             {
                 return CreditCarApplicationDecision.ReferredToHuman;
             }
