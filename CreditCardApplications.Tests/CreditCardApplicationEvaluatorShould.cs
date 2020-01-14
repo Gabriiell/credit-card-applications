@@ -87,6 +87,77 @@ namespace CreditCardApplications.Tests
             Assert.Equal(ValidationMode.Detailed, mockValidator.Object.ValidationMode);
         }
 
+        [Fact]
+        public void ValidateFrequentFlyerNumberForLowIncomeApplications()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCarApplication
+            {
+                GrossAnualInput = 10_000,
+                FrecuentFlyerNumber = "1234"
+            };
+
+            sut.Evaluate(application);
+
+            mockValidator.Verify(x => x.IsValid(It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public void NotValidateFrequentFlyerNumberForHighIncomeApplications()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCarApplication
+            {
+                GrossAnualInput = 100_000,
+                FrecuentFlyerNumber = "1234"
+            };
+
+            sut.Evaluate(application);
+
+            mockValidator.Verify(x => x.IsValid(It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public void CheckLicenseForLowIncomeApplications()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCarApplication
+            {
+                GrossAnualInput = 10_000,
+                FrecuentFlyerNumber = "1234"
+            };
+
+            sut.Evaluate(application);
+
+            mockValidator.VerifyGet(x => x.ServiceInformation.License.LicenseKey, Times.Once);
+        }
+
+        [Fact]
+        public void SetDetailedLookupForOlderApplications()
+        {
+            var mockValidator = new Mock<IFrequentFlyerNumberValidator>();
+            mockValidator.Setup(x => x.ServiceInformation.License.LicenseKey).Returns("OK");
+
+            var sut = new CreditCarApplicationEvaluator(mockValidator.Object);
+            var application = new CreditCarApplication
+            {
+                Age = 30
+            };
+
+            sut.Evaluate(application);
+
+            mockValidator.VerifySet(x => x.ValidationMode = It.IsAny<ValidationMode>(), Times.Once);
+        }
+
         string GetLicense()
         {
             return "EXPIRED";
